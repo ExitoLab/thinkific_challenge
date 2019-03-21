@@ -1,33 +1,38 @@
-import os, json, time, pprint
+import os, json, time, jwt
+import datetime
 
 from flask import Flask, request, Response,jsonify, make_response
 from pymongo import MongoClient, errors
 from flask_bcrypt import Bcrypt
 
 from bson.json_util import dumps
+from functools import wraps
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'This is a secret'
 time.sleep(5) # to ensure mongodb runs immediately the app comes up
 
-users = MongoClient('localhost', 27017).thinkific_challenge.users
+db = MongoClient('localhost', 27017).thinkific_challenge
 flask_bcrypt = Bcrypt(app)
 
-# Get the last id in the database
-
 def get_last_user_id():
-    #check the user_id of the last registered user in the database
-    user = users.find().sort("user_id", -1)
+    #check the user_id of the last registered user_counter in the database
+    users = db.user_counter.find({})
 
-    user_id = ''
-    for x in user:
-        user_id+=str(x)
-    print(user_id)
-    print("s")
-    return user_id
-
+    if db.user_counter.count() == 0:
+        #check if user_counter collection exist and 
+        #create intial value in the collection
+        db.user_counter.insert_one({'user_id': 1})
+        user_counter = 1
+    else:
+        user_counter = ''
+        for user in users:
+            user_counter+= (str(user["user_id"]))
+    return user_counter
+       
 def check_email(email):
     #if email already exist, don't insert into the database
-    user = users.find_one({'email' : email})
+    user = db.users.find_one({'email' : email})
     if user:
         return user
 
@@ -52,10 +57,11 @@ def register():
         return jsonify({"status": "The email already exist!", "data": "The email exist, hence it can not be added!"}), 400
 
     #Get the last_user_id in the users collection
-    #last_user_id = get_last_user_id()
+    last_user_id = get_last_user_id()
 
     if email and password:
-        response = users.insert_one({
+        response = db.users.insert_one({
+            'user_id': last_user_id,
             'email': email,
             'password': password
         })
