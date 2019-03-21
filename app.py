@@ -9,7 +9,7 @@ from bson.json_util import dumps
 app = Flask(__name__)
 time.sleep(5) # to ensure mongodb runs immediately the app comes up
 
-users = MongoClient('mongo', 27017).thinkific_challenge.users
+users = MongoClient('localhost', 27017).thinkific_challenge.users
 flask_bcrypt = Bcrypt(app)
 
 # Get the last id in the database
@@ -39,7 +39,6 @@ def register():
         return jsonify({"status": "ok", "data": "User created successfully!"}),200
     else:
         return jsonify({"status": "failed", "data": "Error, there was an issue!"}), 400
-
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
