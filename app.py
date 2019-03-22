@@ -15,6 +15,29 @@ time.sleep(5) # to ensure mongodb runs immediately the app comes up
 db = MongoClient('localhost', 27017).thinkific_challenge
 flask_bcrypt = Bcrypt(app)
 
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.args.get('token')
+
+        if not token:
+            return jsonify({"status": "Token not present!", "data": "Token is not provided, pls supply the token!"}), 404 
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+        except:
+            return jsonify({'message':'Token is invalid or it has expired'}), 403
+    
+        return f(*args, **kwargs)
+
+    return decorated
+
+@token_required
+@app.route('/v1/next')
+def next_integer():
+    return 
+
 def get_last_user_id():
     #check the user_id of the last registered user_counter in the database
     users = db.user_counter.find({})
@@ -36,7 +59,7 @@ def check_email(email):
     if user:
         return user
 
-@app.route('/register', methods=['POST'])
+@app.route('/v1/register', methods=['POST'])
 def register():
     data = request.get_json()  
     #£nsure that email exist in the request
