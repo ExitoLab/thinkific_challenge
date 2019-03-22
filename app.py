@@ -58,7 +58,6 @@ def next_integer():
     set = {}    
     name = 'counter'
     set['user_id'] = incrementer_integer
-    set ['name'] = name
 
     response = db.user_counter.update_one({'name' : name}, {'$set': set}) 
     if response:
@@ -69,6 +68,28 @@ def next_integer():
 def current_integer():
     last_integer = int (get_last_user_id())
     return jsonify({"Current Integer": last_integer})
+
+
+@app.route('/v1/current', methods=["PUT"])
+@token_required
+def update_integer():
+    data = request.get_json()
+
+    if data['current'] < 0:
+        return jsonify({"status": "Integer will have to be a postive number!", "data": "Pls do provide a postive value, the value you provided is a negative value!"}), 404 
+
+    #£nsure that email exist in the request
+    if 'current' not in data:
+        return jsonify({"status": "Current integer not present!", "data": "The current integer is not provided, pls supply the current integer!"}), 404
+
+    #build up the update values 
+    set = {}
+    set['user_id'] = data['current']
+
+    response = db.user_counter.update_one({'name' : 'counter'}, {'$set': set})
+    if not response:
+        return jsonify({"Status":"An issue has occurred!"})
+    return jsonify({"Current Integer is now": data['current'], "data":"The current integer has been successfully updated!"})
 
 def check_email(email):
     #if email already exist, don't insert into the database
