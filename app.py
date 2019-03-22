@@ -67,9 +67,10 @@ def register():
         })
 
     if response:
-        return jsonify({"status": "ok", "data": "User created successfully!"}),200
+        token = jwt.encode({'email':email,'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
+        return jsonify({"status": "ok", "data": "The user has been created successfully and token generated, please use that token for login!", "token": token.decode('UTF-8')}),200
     else:
-        return jsonify({"status": "failed", "data": "Error, there was an issue!"}), 400
+        return jsonify({"status": "Could not verify!", "data": "'www-Authenticate': 'Basic realm='Login Required''"}), 400
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
