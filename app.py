@@ -1,7 +1,7 @@
 import os, json, time, jwt
 import datetime
 
-from flask import Flask, request, Response,jsonify, make_response
+from flask import Flask, request, Response, jsonify
 from pymongo import MongoClient, errors
 from flask_bcrypt import Bcrypt
 
@@ -14,7 +14,6 @@ time.sleep(5) # to ensure mongodb runs immediately the app comes up
 
 db = MongoClient('localhost', 27017).thinkific_challenge
 flask_bcrypt = Bcrypt(app)
-
 
 def token_required(f):
     @wraps(f)
@@ -34,9 +33,21 @@ def token_required(f):
     return decorated
 
 @token_required
-@app.route('/v1/next')
+@app.route('/v1/next', methods=["GET"])
 def next_integer():
-    return 
+    #Get the last integer
+    last_integer = int (get_last_user_id())
+    current_integer =  last_integer + 1 
+     
+    #build up the update values 
+    set = {}    
+    name = 'counter'
+    set['user_id'] = current_integer
+    set ['name'] = name
+
+    response = db.user_counter.update_one({'name' : name}, {'$set': set}) 
+    if response:
+        return jsonify({"status": "Successful", "data": "The id was successfully incremented from, 'last_integer' to   'current_integer' " }), 200 
 
 def get_last_user_id():
     #check the user_id of the last registered user_counter in the database
@@ -45,7 +56,7 @@ def get_last_user_id():
     if db.user_counter.count() == 0:
         #check if user_counter collection exist and 
         #create intial value in the collection
-        db.user_counter.insert_one({'user_id': 1})
+        db.user_counter.insert_one({'user_id': 1, 'name': 'counter'})
         user_counter = 1
     else:
         user_counter = ''
