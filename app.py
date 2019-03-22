@@ -24,30 +24,13 @@ def token_required(f):
             return jsonify({"status": "Token not present!", "data": "Token is not provided, pls supply the token!"}), 404 
 
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            jwt.decode(token, app.config['SECRET_KEY'])
         except:
             return jsonify({'message':'Token is invalid or it has expired'}), 403
     
         return f(*args, **kwargs)
 
     return decorated
-
-@app.route('/v1/next', methods=["GET"])
-@token_required
-def next_integer():
-    #Get the last integer
-    last_integer = int (get_last_user_id())
-    current_integer =  last_integer + 1 
-     
-    #build up the update values 
-    set = {}    
-    name = 'counter'
-    set['user_id'] = current_integer
-    set ['name'] = name
-
-    response = db.user_counter.update_one({'name' : name}, {'$set': set}) 
-    if response:
-        return jsonify({"status": "Successful", "data": "The id was successfully incremented from, 'last_integer' to   'current_integer' " }), 200 
 
 def get_last_user_id():
     #check the user_id of the last registered user_counter in the database
@@ -64,6 +47,29 @@ def get_last_user_id():
             user_counter+= (str(user["user_id"]))
     return user_counter
        
+@app.route('/v1/next', methods=["GET"])
+@token_required
+def next_integer():
+    #Get the last integer
+    former_integer = int (get_last_user_id())
+    incrementer_integer =  former_integer + 1 
+     
+    #build up the update values 
+    set = {}    
+    name = 'counter'
+    set['user_id'] = incrementer_integer
+    set ['name'] = name
+
+    response = db.user_counter.update_one({'name' : name}, {'$set': set}) 
+    if response:
+        return jsonify({"Former Integer": former_integer, "Next Integer":incrementer_integer})
+
+@app.route('/v1/current', methods=["GET"])
+@token_required
+def current_integer():
+    last_integer = int (get_last_user_id())
+    return jsonify({"Current Integer": last_integer})
+
 def check_email(email):
     #if email already exist, don't insert into the database
     user = db.users.find_one({'email' : email})
@@ -101,8 +107,8 @@ def register():
         })
 
     if response:
-        token = jwt.encode({'email':email,'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, app.config['SECRET_KEY'])
-        return jsonify({"status": "ok", "data": "The user has been created successfully and token generated, please use that token for login!", "token": token.decode('UTF-8')}),200
+        token = jwt.encode({'email':email,'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}, app.config['SECRET_KEY'])
+        return jsonify({"status": "ok", "data": "The user has been created successfully and token generated, please use that token for login!", "token expiry": "60 minutes ", "token": token.decode('UTF-8')}),200
     else:
         return jsonify({"status": "Could not verify!", "data": "'www-Authenticate': 'Basic realm='Login Required''"}), 400
 
