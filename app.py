@@ -9,7 +9,7 @@ from bson.json_util import dumps
 from functools import wraps
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'This is a secret'
+app.config['SECRET_KEY'] = 'iJIUzI1NiJ9.eyJlbWFpbCI6ImlnZWFkZXRva3VuYm9fN'
 time.sleep(5) # to ensure mongodb runs immediately the app comes up
 
 db = MongoClient('localhost', 27017).thinkific_challenge
