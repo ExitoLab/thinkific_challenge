@@ -72,7 +72,7 @@ def current_integer():
 
 @app.route('/v1/current', methods=["PUT"])
 @token_required
-def update_integer():
+def reset_integer():
     data = request.get_json()
 
     if data['current'] < 0:
