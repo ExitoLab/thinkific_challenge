@@ -32,8 +32,8 @@ def token_required(f):
 
     return decorated
 
-@token_required
 @app.route('/v1/next', methods=["GET"])
+@token_required
 def next_integer():
     #Get the last integer
     last_integer = int (get_last_user_id())
