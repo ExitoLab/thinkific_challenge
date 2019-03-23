@@ -27,6 +27,7 @@ def initialize_env(testing = False):
 
 flask_bcrypt = Bcrypt(app)
 
+#Implemented the jwt function which generates the token
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -45,19 +46,19 @@ def token_required(f):
     return decorated
 
 def get_incremented_id():
-    #check the user_id of the last registered user_counter in the database
-    users = db.user_counter.find({})
+    #check the user_id of the last registered incremental_counter in the database
+    users = db.incremental_counter.find({})
 
-    if db.user_counter.count() == 0:
-        #check if user_counter collection exist and 
+    if db.incremental_counter.count() == 0:
+        #check if incremental_counter collection exist and 
         #create intial value in the collection
-        db.user_counter.insert_one({'user_id': 1, 'name': 'counter'})
-        user_counter = 1
+        db.incremental_counter.insert_one({'user_id': 1, 'name': 'counter'})
+        incremental_counter = 1
     else:
-        user_counter = ''
+        incremental_counter = ''
         for user in users:
-            user_counter+= (str(user["user_id"]))
-    return user_counter
+            incremental_counter+= (str(user["user_id"]))
+    return incremental_counter
        
 @app.route('/v1/next', methods=["GET"])
 @token_required
@@ -71,7 +72,7 @@ def next_integer():
     name = 'counter'
     set['user_id'] = incrementer_integer
 
-    response = db.user_counter.update_one({'name' : name}, {'$set': set}) 
+    response = db.incremental_counter.update_one({'name' : name}, {'$set': set}) 
     if response:
         return jsonify({"Former Integer": former_integer, "Next Integer":incrementer_integer})
 
@@ -98,7 +99,7 @@ def reset_integer():
     set = {}
     set['user_id'] = data['current']
 
-    response = db.user_counter.update_one({'name' : 'counter'}, {'$set': set})
+    response = db.incremental_counter.update_one({'name' : 'counter'}, {'$set': set})
     if not response:
         return jsonify({"Status":"An issue has occurred!"})
     return jsonify({"Current Integer is now": data['current'], "data":"The current integer has been successfully updated!"})
@@ -147,6 +148,7 @@ def register():
     else:
         return jsonify({"status": "Could not verify!", "data": "'www-Authenticate': 'Basic realm='Login Required''"}), 400
 
+#health endpoint which checks that mongodb is up and the service is up 
 @app.route("/health")
 def healthcheck():
     check_mongodb = "True"
