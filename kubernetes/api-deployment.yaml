@@ -19,6 +19,8 @@ spec:
       - env:
         - name: SERVE_PORT
           value: '5000'
+        -  name: intial_incremental_value
+           value: '1'
         image: talk2toks/thinkific_challenge:v1.0
         name: tchallenge
         imagePullPolicy: IfNotPresent
