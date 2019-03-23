@@ -44,7 +44,7 @@ def token_required(f):
 
     return decorated
 
-def get_last_user_id():
+def get_incremented_id():
     #check the user_id of the last registered user_counter in the database
     users = db.user_counter.find({})
 
@@ -63,7 +63,7 @@ def get_last_user_id():
 @token_required
 def next_integer():
     #Get the last integer
-    former_integer = int (get_last_user_id())
+    former_integer = int (get_incremented_id())
     incrementer_integer =  former_integer + 1 
      
     #build up the update values 
@@ -78,7 +78,7 @@ def next_integer():
 @app.route('/v1/current', methods=["GET"])
 @token_required
 def current_integer():
-    last_integer = int (get_last_user_id())
+    last_integer = int (get_incremented_id())
     return jsonify({"Current Integer": last_integer})
 
 
@@ -129,18 +129,20 @@ def register():
     if check_email_exist:
         return jsonify({"status": "The email already exist!", "data": "The email exist, hence it can not be added!"}), 400
 
-    #Get the last_user_id in the users collection
-    last_user_id = get_last_user_id()
+    #Get the incremented_id in the users collection
+    #This is to keep track of who inserted the value 
+    incremented_id = get_incremented_id()
 
-    if email and password:
+    token = jwt.encode({'email':email,'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=600)}, app.config['SECRET_KEY'])
+    if email and password and token:
         response = db.users.insert_one({
-            'user_id': last_user_id,
+            'incremented_id': incremented_id,
             'email': email,
-            'password': password
+            'password': password,
+            'token':token
         })
 
     if response:
-        token = jwt.encode({'email':email,'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=600)}, app.config['SECRET_KEY'])
         return jsonify({"status": "ok", "data": "The user has been created successfully and token generated, please use that token for login!", "token expiry": "600 minutes", "token": token.decode('UTF-8')}),200
     else:
         return jsonify({"status": "Could not verify!", "data": "'www-Authenticate': 'Basic realm='Login Required''"}), 400
