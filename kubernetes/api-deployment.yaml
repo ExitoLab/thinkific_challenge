@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: api
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - env:
+        - name: SERVE_PORT
+          value: '5000'
+        image: talk2toks/thinkific_challenge:v1.0
+        name: tchallenge
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 4
+          periodSeconds: 4
+          failureThreshold: 4
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 4
+          periodSeconds: 4
+          failureThreshold: 4
+        ports:
+        - containerPort: 5000
+        resources: {}
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: configapi
+    tier: frontend
+  name: configapi
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: configapi
+    tier: frontend
+  type: NodePort
+status:
+  loadBalancer: {}
