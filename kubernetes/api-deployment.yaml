@@ -49,17 +49,15 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: configapi
-    tier: frontend
-  name: configapi
+    app: api
+  name: api
 spec:
   ports:
   - port: 5000
     protocol: TCP
     targetPort: 5000
   selector:
-    app: configapi
-    tier: frontend
+    app: api
   type: NodePort
 status:
   loadBalancer: {}
