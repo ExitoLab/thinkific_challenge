@@ -60,6 +60,7 @@ def get_incremented_id():
             incremental_counter+= (str(user["user_id"]))
     return incremental_counter
        
+#Ensure token exist and it is valid before accepting the request       
 @app.route('/v1/next', methods=["GET"])
 @token_required
 def next_integer():
@@ -76,13 +77,14 @@ def next_integer():
     if response:
         return jsonify({"Former Integer": former_integer, "Next Integer":incrementer_integer})
 
+#Ensure token exist and it is valid before accepting the request
 @app.route('/v1/current', methods=["GET"])
 @token_required
 def current_integer():
     last_integer = int (get_incremented_id())
     return jsonify({"Current Integer": last_integer})
 
-
+#Ensure token exist and it is valid before accepting the request
 @app.route('/v1/current', methods=["PUT"])
 @token_required
 def reset_integer():
