@@ -56,7 +56,7 @@ def get_incremented_id():
         #Get the intial_incremental_value from the yaml file, this assumes that there should be a initial value
         intial_incremental_value = os.getenv("intial_incremental_value")
         db.incremental_counter.insert_one({'incremental_id': intial_incremental_value, 'name': 'counter'})
-        incremental_counter = 1
+        incremental_counter = intial_incremental_value
     else:
         incremental_counter = ''
         for detail in incremental_counter_details:
@@ -84,8 +84,8 @@ def next_integer():
 @app.route('/v1/current', methods=["GET"])
 @token_required
 def current_integer():
-    last_integer = int (get_incremented_id())
-    return jsonify({"Current Integer": last_integer})
+    current_integer = int (get_incremented_id())
+    return jsonify({"Current Integer": current_integer})
 
 #Ensure token exist and it is valid before accepting the request
 @app.route('/v1/current', methods=["PUT"])
