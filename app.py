@@ -46,18 +46,21 @@ def token_required(f):
     return decorated
 
 def get_incremented_id():
-    #check the user_id of the last registered incremental_counter in the database
-    users = db.incremental_counter.find({})
+    #check the incremental_id of the last registered incremental_counter in the database
+    incremental_counter_details = db.incremental_counter.find({})
 
     if db.incremental_counter.count() == 0:
         #check if incremental_counter collection exist and 
         #create intial value in the collection
-        db.incremental_counter.insert_one({'user_id': 1, 'name': 'counter'})
+
+        #Get the intial_incremental_value from the yaml file, this assumes that there should be a initial value
+        intial_incremental_value = os.getenv("intial_incremental_value")
+        db.incremental_counter.insert_one({'incremental_id': intial_incremental_value, 'name': 'counter'})
         incremental_counter = 1
     else:
         incremental_counter = ''
-        for user in users:
-            incremental_counter+= (str(user["user_id"]))
+        for detail in incremental_counter_details:
+            incremental_counter+= (str(detail["incremental_id"]))
     return incremental_counter
        
 #Ensure token exist and it is valid before accepting the request       
@@ -71,7 +74,7 @@ def next_integer():
     #build up the update values 
     set = {}    
     name = 'counter'
-    set['user_id'] = incrementer_integer
+    set['incremental_id'] = incrementer_integer
 
     response = db.incremental_counter.update_one({'name' : name}, {'$set': set}) 
     if response:
@@ -99,7 +102,7 @@ def reset_integer():
 
     #build up the update values 
     set = {}
-    set['user_id'] = data['current']
+    set['incremental_id'] = data['current']
 
     response = db.incremental_counter.update_one({'name' : 'counter'}, {'$set': set})
     if not response:
