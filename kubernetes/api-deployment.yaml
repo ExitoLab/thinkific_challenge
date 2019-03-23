@@ -21,14 +21,14 @@ spec:
           value: '5000'
         -  name: intial_incremental_value
            value: '1'
-        image: talk2toks/thinkific_challenge:v1.0
+        image: talk2toks/thinkific_challenge:v1.1
         name: tchallenge
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 5
+          initialDelaySeconds: 150
           timeoutSeconds: 4
           periodSeconds: 4
           failureThreshold: 4
@@ -36,7 +36,7 @@ spec:
           httpGet:
             path: /health
             port: 5000
-          initialDelaySeconds: 5
+          initialDelaySeconds: 150
           timeoutSeconds: 4
           periodSeconds: 4
           failureThreshold: 4
