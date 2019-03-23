@@ -12,7 +12,19 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'iJIUzI1NiJ9.eyJlbWFpbCI6ImlnZWFkZXRva3VuYm9fN'
 time.sleep(5) # to ensure mongodb runs immediately the app comes up
 
-db = MongoClient('localhost', 27017).thinkific_challenge
+#load values from .env for unit testing
+from dotenv import load_dotenv
+load_dotenv()
+
+#This manages the client between unit testing and rest api
+def initialize_env(testing = False):
+    global db
+    if testing:
+        port = eval(os.environ.get("mongo_db_port"))
+        db = MongoClient(os.environ.get("mongodb_server"), port).test
+    else:
+        db = MongoClient('mongodb', 27017).thinkific_challenge
+
 flask_bcrypt = Bcrypt(app)
 
 def token_required(f):
@@ -133,5 +145,15 @@ def register():
     else:
         return jsonify({"status": "Could not verify!", "data": "'www-Authenticate': 'Basic realm='Login Required''"}), 400
 
+@app.route("/health")
+def healthcheck():
+    check_mongodb = "True"
+    if not db:
+        check_mongodb = "False"
+    return jsonify({"status": "ok", "check Mongodb": check_mongodb })
+
 if __name__ == '__main__':
+    initialize_env()
+    port = os.getenv("SERVER_PORT")
+    app.config['DEBUG'] = True
     app.run(debug=False, host='0.0.0.0')
