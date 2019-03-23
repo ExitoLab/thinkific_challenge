@@ -91,9 +91,10 @@ def current_integer():
 @app.route('/v1/current', methods=["PUT"])
 @token_required
 def reset_integer():
-    data = request.get_json()
+    data =  request.get_json()
 
-    if data['current'] < 0:
+    current = int(data['current'])
+    if current < 0:
         return jsonify({"status": "Integer will have to be a postive number!", "data": "Pls do provide a postive value, the value you provided is a negative value!"}), 404 
 
     #£nsure that email exist in the request
@@ -102,12 +103,12 @@ def reset_integer():
 
     #build up the update values 
     set = {}
-    set['incremental_id'] = data['current']
+    set['incremental_id'] =  current
 
     response = db.incremental_counter.update_one({'name' : 'counter'}, {'$set': set})
     if not response:
         return jsonify({"Status":"An issue has occurred!"})
-    return jsonify({"Current Integer is now": data['current'], "data":"The current integer has been successfully updated!"})
+    return jsonify({"Current Integer is now": current, "data":"The current integer has been successfully updated!"})
 
 def check_email(email):
     #if email already exist, don't insert into the database
