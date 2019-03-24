@@ -1,8 +1,5 @@
 FROM python:3.5-jessie
 
-ENV http_proxy="http://switcher:Alpha.02%@172.25.20.215:80"
-ENV https_proxy="http://switcher:Alpha.02%@172.25.20.215:80"
-
 RUN apt-get update
 
 RUN mkdir api
