@@ -9,7 +9,6 @@ from bson.json_util import dumps
 from functools import wraps
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'iJIUzI1NiJ9.eyJlbWFpbCI6ImlnZWFkZXRva3VuYm9fN'
 time.sleep(5) # to ensure mongodb runs immediately the app comes up
 
 #load values from .env for unit testing
@@ -20,10 +19,16 @@ load_dotenv()
 def initialize_env(testing = False):
     global db
     if testing:
+        #Pick all this values from env variables
         port = eval(os.environ.get("mongo_db_port"))
         db = MongoClient(os.environ.get("mongodb_server"), port).test
+        app.config['SECRET_KEY'] = os.environ.get("secret_key")
+        intial_incremental_value_env = os.environ.get("intial_incremental_value")
     else:
+        #Pick all this values from yaml file
         db = MongoClient('mongodb', 27017).thinkific_challenge
+        app.config['SECRET_KEY'] = os.getenv("SERVER_PORT")
+        intial_incremental_value_env = os.getenv("intial_incremental_value")
 
 flask_bcrypt = Bcrypt(app)
 
@@ -54,7 +59,7 @@ def get_incremented_id():
         #create intial value in the collection
 
         #Get the intial_incremental_value from the yaml file, this assumes that there should be a initial value
-        intial_incremental_value = os.getenv("intial_incremental_value")
+        intial_incremental_value = intial_incremental_value_env
         db.incremental_counter.insert_one({'incremental_id': intial_incremental_value, 'name': 'counter'})
         incremental_counter = intial_incremental_value
     else:
@@ -150,7 +155,7 @@ def register():
         })
 
     if response:
-        return jsonify({"status": "ok", "data": "The user has been created successfully and token generated, please use that token for login!", "token expiry": "600 minutes", "token": token.decode('UTF-8')}),200
+        return jsonify({"status": "ok", "data": "The user has been created successfully and token generated, please use that token for login!", "token expiry": "600 minutes", "token": token.decode('UTF-8')}),201
     else:
         return jsonify({"status": "Could not verify!", "data": "'www-Authenticate': 'Basic realm='Login Required''"}), 400
 
