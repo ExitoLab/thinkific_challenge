@@ -21,7 +21,9 @@ spec:
           value: '5000'
         -  name: intial_incremental_value
            value: '1'
-        image: talk2toks/thinkific_challenge:v1.1
+        -  name: secret_key 
+           value: 'iJIUzI1NiJ9.eyJlbWFpbCI6ImlnZWFkZXRva3VuYm9fN'
+        image: talk2toks/thinkific_challenge:v1.5
         name: tchallenge
         imagePullPolicy: IfNotPresent
         livenessProbe:

@@ -17,6 +17,35 @@ To run this application, the rest service needs to be deployed in a kubernetes e
 4. The `incremental_counter` contains the record of the incremental id
 5. The `users` contains details of the user that registered such as `email`, `hashed password`, `token`,    `incremental_id`.
 
+## Step by step guide in deploying the application
+
+1. Ensure you successfully have minikube and kubectl running on your workstation if you want to run locally 
+2. Ensure you have a kubernetes cluster running and kubectl is installed if you want to run it in the cloud 
+3. Do a git clone of the project
+4. Have a copy of minikube running and all necessary things are setup
+5. Navigate to the cloned project 
+6. Change directory to kubernetes folder 
+7. Run `kubectl apply -f mongodb-volume.yaml`, `kubectl apply -f mongodb-volume-claim.yaml`, `kubectl apply -f mongodb-deployment.yaml`, `kubectl apply -f api-deployment.yaml` this creates the deployment and service for the rest api and mongodb.
+8. kubectl apply -f mongodb-volume-claim.yaml and mongodb-volume.yaml will make mongodb use persistent volume. mongodb-deployment.yaml will deploy monogodb on kubernetes 
+9. api-deployment.yaml will deploy the rest api for this service
+10. `kubectl apply -f mongodb-deployment.yaml` this creates the deployment and service for the mongodb
+11. Pls note mongodb needs to come up first. i.e the pod and mongodb instance needs to be running and it should read 1/1. Once it comes up, then continue with the steps
+12. `kubectl apply -f api-deployment.yaml` this creates the deployment and service for the rest api  
+13. Run  `minikube service api --url` so you can get the ip address of the endpoint to call.
+14. You can now test the endpoint http://minikubeip:port/<url of the endpoint below>
+
+The following endpoints were implemented:
+
+| Name                       | Method   | URL
+| ---                        | ---      | ---
+| Create user                | `POST`   | `/v1/register`
+| Get the next integer       | `GET`    | `/v1/next?token=<generated_token>`
+| Get the current integer    | `GET`    | `/v1/current?token=<generated_token>`
+| Update the current integer | `PUT`    | `/v1/current?token=<generated_token>`
+| Check health endpoint      | `GET`    | `/health`
+
+Pls replace `generated_token` with the generated token once you do send post request to  `/v1/register` end point 
+
 ## Stack includes 
 
 1. Flask framework 
