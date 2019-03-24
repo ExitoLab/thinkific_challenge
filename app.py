@@ -27,7 +27,7 @@ def initialize_env(testing = False):
     else:
         #Pick all this values from yaml file
         db = MongoClient('mongodb', 27017).thinkific_challenge
-        app.config['SECRET_KEY'] = os.getenv("SERVER_PORT")
+        app.config['SECRET_KEY'] = os.getenv("secret_key")
         intial_incremental_value_env = os.getenv("intial_incremental_value")
 
 flask_bcrypt = Bcrypt(app)
