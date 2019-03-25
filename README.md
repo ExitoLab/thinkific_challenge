@@ -38,7 +38,7 @@ The following endpoints were implemented:
 
 | Name                       | Method   | URL
 | ---                        | ---      | ---
-| Create user                | `POST`   | `/v1/register`
+| Register  user             | `POST`   | `/v1/register`
 | Get the next integer       | `GET`    | `/v1/next?token=<generated_token>`
 | Get the current integer    | `GET`    | `/v1/current?token=<generated_token>`
 | Update the current integer | `PUT`    | `/v1/current?token=<generated_token>`
@@ -54,3 +54,24 @@ Pls replace `generated_token` with the generated token once you do send post req
 4. Docker 
 5. Docker Compose
 6. Kubernetes 
+7. Github
+
+## Questions and answers
+Questions 1 to 4 can be found under endpoints that were implemented session
+5. Deploy your application to the cloud and either show or tell us how you might monitor it. 
+Answer: The application was deployed on kubernetes which have an health endpoint. This endpoint checks mongodb and if there is a bug in the code.. The health endpoint will not come up if there is an error . In monitoring the application, i will make use of the following tools : 
+i. Nagios 
+ii. Monitis which will check the application from different regios of the world 
+iii. Promethus 
+iv. Will also implement pagerduty, which will call the engineer on call if the health endpoint is not up 
+
+6. Explain how you would go about making sure that the application is highly  available.This would include the application itself as well as any other  services that is uses (like a database
+Answer: The application was deployed on kubernetes and kubernetes supports running multiple instances of the application, in kubernetes it is called `replicas`. Presently two instance of the application are running, however more than 2 instances can be configured to run and if the application goes down other instance can pickup which will prevent the downtime. For the database i use mongodb in this exercrise, mongodb supports high availability which is having a replicaset of serveral mongodb instance running and 1 of the instance will be the primary database and the others will be readonly. Since the application and database support high avaliablity this will promote business continuity.  
+
+
+## Stretch Goals (if you feel like showing off a bit)    
+1. Hook up APM using a service like ​https://www.elastic.co/
+Answer: I planned to integrate datadog to the rest endpoint. I have worked appDynamic in the past.
+   
+2. Allow sign up using OAuth  a. Github, Facebook, Google, anything that supports it!
+Answer: I used jwt for the signup and i discussed this with the hiring manager 
