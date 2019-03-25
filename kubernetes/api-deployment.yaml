@@ -23,7 +23,11 @@ spec:
            value: '1'
         -  name: secret_key 
            value: 'iJIUzI1NiJ9.eyJlbWFpbCI6ImlnZWFkZXRva3VuYm9fN'
-        image: talk2toks/thinkific_challenge:v1.5
+        - name: mongodb_server
+          value: 'mongodb'
+        - name: mongo_db_port
+          value: '27017'          
+        image: talk2toks/thinkific_challenge:v2.0
         name: tchallenge
         imagePullPolicy: IfNotPresent
         livenessProbe:
