@@ -71,7 +71,8 @@ Answer: The application was deployed on kubernetes and kubernetes supports runni
 
 ## Stretch Goals (if you feel like showing off a bit)    
 1. Hook up APM using a service like ​https://www.elastic.co/
-Answer: I planned to integrate datadog to the rest endpoint. I have worked appDynamic in the past.
+Answer: I planned to integrate datadog to the rest endpoint. I will have to follow this tutorial for kubernetes in achiveing this https://www.datadoghq.com/blog/monitor-kubernetes-docker/
+I have worked appDynamic in the past. 
    
 2. Allow sign up using OAuth  a. Github, Facebook, Google, anything that supports it!
-Answer: I used jwt for the signup and i discussed this with the hiring manager 
+Answer: I used JSON Web Token Authentication for the signup and i discussed this with the hiring manager
