@@ -126,7 +126,7 @@ def check_email(email):
 def register():
     data = request.get_json()  
     #£nsure that email exist in the request
-    if 'email' not in data or 'Email' not in data 
+    if 'email' not in data or 'Email' not in data:
         return jsonify({"status": "Email not present!", "data": "Email is not provided, pls supply the email!"}), 404
 
     #£nsure that password exist in the request
