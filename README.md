@@ -46,6 +46,8 @@ The following endpoints were implemented:
 
 Pls replace `generated_token` with the generated token once you do send post request to  `/v1/register` end point 
 
+`output_images` folder contains screenshot of the test i need to confirm that all the end points are working fine. This test was done using `postman`
+
 ## Stack includes 
 
 1. Flask framework 
@@ -60,10 +62,10 @@ Pls replace `generated_token` with the generated token once you do send post req
 Questions 1 to 4 can be found under endpoints that were implemented session
 5. Deploy your application to the cloud and either show or tell us how you might monitor it. 
 Answer: The application was deployed on kubernetes which have an health endpoint. This endpoint checks mongodb and if there is a bug in the code.. The health endpoint will not come up if there is an error . In monitoring the application, i will make use of the following tools : 
-i. Nagios 
-ii. Monitis which will check the application from different regios of the world 
-iii. Promethus 
-iv. Will also implement pagerduty, which will call the engineer on call if the health endpoint is not up 
+1. Nagios 
+2. Monitis which will check the application from different regios of the world 
+3. Promethus 
+4. Will also implement pagerduty, which will call the engineer on call if the health endpoint is not up 
 
 6. Explain how you would go about making sure that the application is highly  available.This would include the application itself as well as any other  services that is uses (like a database
 Answer: The application was deployed on kubernetes and kubernetes supports running multiple instances of the application, in kubernetes it is called `replicas`. Presently two instance of the application are running, however more than 2 instances can be configured to run and if the application goes down other instance can pickup which will prevent the downtime. For the database i use mongodb in this exercrise, mongodb supports high availability which is having a replicaset of serveral mongodb instance running and 1 of the instance will be the primary database and the others will be readonly. Since the application and database support high avaliablity this will promote business continuity.  
