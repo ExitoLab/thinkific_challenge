@@ -98,13 +98,13 @@ def current_integer():
 def reset_integer():
     data =  request.get_json()
 
-    current = data['current']
+    current = data['current'] or data['Current'] 
     current = int(current)
     if current < 0:
         return jsonify({"status": "Integer will have to be a postive number!", "data": "Pls do provide a postive value, the value you provided is a negative value!"}), 404 
 
     #£nsure that email exist in the request
-    if 'current' not in data:
+    if 'current' not in data or 'Current' not in data: 
         return jsonify({"status": "Current integer not present!", "data": "The current integer is not provided, pls supply the current integer!"}), 404
 
     #build up the update values 
@@ -126,15 +126,15 @@ def check_email(email):
 def register():
     data = request.get_json()  
     #£nsure that email exist in the request
-    if 'email' not in data:
+    if 'email' not in data or 'Email' not in data 
         return jsonify({"status": "Email not present!", "data": "Email is not provided, pls supply the email!"}), 404
 
     #£nsure that password exist in the request
-    if 'password' not in data:
+    if 'password' not in data or 'Password' not in data:
         return jsonify({"status": "Password not present!", "data": "Password is not provided, pls supply the password!"}), 404
 
-    email = data['email']
-    password = flask_bcrypt.generate_password_hash(data['password'])
+    email = data['email'] or data['Email']
+    password = flask_bcrypt.generate_password_hash(data['password']) or flask_bcrypt.generate_password_hash(data['Password']) 
 
     #confirm if email exist in the database 
     #if it exist, there is no need add the credentials in the database
