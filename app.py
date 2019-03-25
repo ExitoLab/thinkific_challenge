@@ -98,7 +98,7 @@ def current_integer():
 def reset_integer():
     data =  request.get_json()
 
-    current = int(data['current'])
+    current = data['current']
     if current < 0:
         return jsonify({"status": "Integer will have to be a postive number!", "data": "Pls do provide a postive value, the value you provided is a negative value!"}), 404 
 
@@ -108,7 +108,7 @@ def reset_integer():
 
     #build up the update values 
     set = {}
-    set['incremental_id'] =  current
+    set['incremental_id'] =  int(current)
 
     response = db.incremental_counter.update_one({'name' : 'counter'}, {'$set': set})
     if not response:
